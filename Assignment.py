@@ -43,12 +43,12 @@ def dft_systemds(signal,name):
         DFT_df = spark.createDataFrame(DFT.tolist(),["id",name+'_sin',name+'_cos'])
         return DFT_df
 
-x0 = spark.sql("SELECT X from df where class = 0")
-y0 = spark.sql("SELECT Y from df where class = 0")
-z0 = spark.sql("SELECT Z from df where class = 0")
-x1 = spark.sql("SELECT X from df where class = 1")
-y1 = spark.sql("SELECT Y from df where class = 1")
-z1 = spark.sql("SELECT Z from df where class = 1")
+y0 = spark.sql("SELECT Y from df where class = 0").toPandas()
+z0 = spark.sql("SELECT Z from df where class = 0").toPandas()
+x0 = spark.sql("SELECT X from df where class = 0").toPandas()
+x1 = spark.sql("SELECT X from df where class = 1").toPandas()
+y1 = spark.sql("SELECT Y from df where class = 1").toPandas()
+z1 = spark.sql("SELECT Z from df where class = 1").toPandas()
 
 from pyspark.sql.functions import lit
 
@@ -72,7 +72,7 @@ vectorAssembler = VectorAssembler(
     outputCol="features")
 
 from pyspark.ml.classification import GBTClassifier
-classifier = GBTClassifier(labelCol="label", featuresCol="features", maxiter=10)
+classifier = GBTClassifier(labelCol="class", featuresCol="features", maxIter=10)
 
 from pyspark.ml import Pipeline
 pipeline = Pipeline(stages=[vectorAssembler, classifier])
